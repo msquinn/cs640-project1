@@ -30,7 +30,7 @@ public class Iperfer {
 				BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));//used to get server's response
 				
 				){
-			String userInput;//TODO change this to send 100 bytes
+			String userInput;//TODO change this to send 1000 bytes
 			while((userInput = stdin.readLine())!= null) {
 				out.println(userInput);
 				System.out.println("echo: " + in.readLine());
