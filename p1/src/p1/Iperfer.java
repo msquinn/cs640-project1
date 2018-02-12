@@ -1,9 +1,7 @@
 package p1;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
+
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -14,34 +12,31 @@ public class Iperfer {
 		// TODO Auto-generated method stub
 		// TODO call client or server depending on which command line shit is entered
 		if (args[0].equals("-c")) {
-		client(args[3], Integer.parseInt(args[5]));
+		client(args[2], Integer.parseInt(args[4]), Integer.parseInt(args[6]));
 		}else if (args[0].equals("-s")) {
 		server(Integer.parseInt(args[2]));
 		}
 	}
 	
 	
-	private static void client(String hostName, int portNumber) {
-
+	private static void client(String hostName, int portNumber, int time) {
+		byte [] b = new byte [1000];
 		try(
-				Socket echoSocket = new Socket(hostName, portNumber);//creates new socket and names it echoSocket
-				PrintWriter out = new PrintWriter(echoSocket.getOutputStream(),true);//opens a print writer on the output stream, necessary to send data over pipe
-				BufferedReader in = new BufferedReader(new InputStreamReader(echoSocket.getInputStream())); //opens a buffer reader on the input stream
-				BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));//used to get server's response
-				
-				){
-			String userInput;//TODO change this to send 100 bytes
-			while((userInput = stdin.readLine())!= null) {
-				out.println(userInput);
-				System.out.println("echo: " + in.readLine());
+				Socket socketInput = new Socket(hostName, portNumber);//creates new socket and names it echoSocket
+				DataOutputStream dout = new DataOutputStream(socketInput.getOutputStream());					
+				) {
+			long convertedTime = time * 1000;
+			long startTime = System.currentTimeMillis();
+			while(false||(System.currentTimeMillis()-startTime)<convertedTime) {
+			dout.write(b, 0, b.length);
 			}
 		}
 		/****EXCEPTION HANDLING***/
 			catch (UnknownHostException e) {
-				 System.err.println("Don't know about host " + hostName);
+				 System.err.println("Don't know about host " + hostName);//TODO change message
 		            System.exit(1);
 		        } catch (IOException e) {
-		            System.err.println("Couldn't get I/O for the connection to " +
+		            System.err.println("Couldn't get I/O for the connection to " + //TODO change message
 		                hostName);
 		            System.exit(1);
 		        } 
@@ -54,8 +49,8 @@ public class Iperfer {
 			ServerSocket serverSocket = new ServerSocket(portNumber);//opens server socket
 			Socket clientSocket = serverSocket.accept();//listens for connections to the socket
 			/**how data is sent through the pipe**/
-			PrintWriter out = new PrintWriter(clientSocket.getOutputStream(),true);
-			BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+				DataInputStream din = new DataInputStream(clientSocket.getInputStream());
+				//TODO recieve data and print stats
 				){
 			 
 			
