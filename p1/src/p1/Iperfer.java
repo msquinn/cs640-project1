@@ -25,11 +25,15 @@ public class Iperfer {
 				Socket socketInput = new Socket(hostName, portNumber);//creates new socket and names it echoSocket
 				DataOutputStream dout = new DataOutputStream(socketInput.getOutputStream());					
 				) {
+			int count =0;
 			long convertedTime = time * 1000;
 			long startTime = System.currentTimeMillis();
 			while(false||(System.currentTimeMillis()-startTime)<convertedTime) {
 			dout.write(b, 0, b.length);
+			count++;
 			}
+			double rate = count/time;
+			System.out.println("sent="+(count/1000)+" KB rate="+rate);//TODO print stats
 		}
 		/****EXCEPTION HANDLING***/
 			catch (UnknownHostException e) {
@@ -52,11 +56,28 @@ public class Iperfer {
 				DataInputStream din = new DataInputStream(clientSocket.getInputStream());
 				//TODO recieve data and print stats
 				){
-			 
+			int count = 0;
+			int value = 0;
+			long startTime;
+			long finishTime;
+			 while(true){
+				 startTime = System.currentTimeMillis();
+				 value = din.read();
+				 if(value == -1) {
+					 finishTime = System.currentTimeMillis();
+					 break;
+				 }
+				 else {
+					 count = count + value;
+				 }
+			 }
+			 double finalData = count/1000;
+			 double finalRate = count/(finishTime-startTime);
+			 System.out.println("recieved="+finalData+" KB rate="+finalRate+" Mbps");
 			
 		}catch (IOException e) {
 				 System.out.println("Exception caught when trying to listen on port "
-			                + portNumber + " or listening for a connection");
+			                + portNumber + " or listening for a connection");//TODO change message
 			            System.out.println(e.getMessage());
 			}
 	}
