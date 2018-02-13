@@ -1,4 +1,7 @@
+package p1;
+
 import java.io.*;
+
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -7,13 +10,8 @@ public class Iperfer {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
+		//System.out.print(args[0]);
 		// TODO call client or server depending on which command line shit is entered
-	if(((args[0].equals("-s")&&args.length!=3) && (args[0].equals("-c") && args.length!=7))) { //TODO change
-		
-			System.out.println("length:"+args.length);
-			System.out.println("Error: missing or additional arguments");
-			System.exit(1);
-		}
 		if (args[0].equals("-c")) {
 		client(args[2], Integer.parseInt(args[4]), Integer.parseInt(args[6]));
 		}else if (args[0].equals("-s")) {
@@ -21,22 +19,21 @@ public class Iperfer {
 		}
 	}
 	
-	
 	private static void client(String hostName, int portNumber, int time) {
 		byte [] b = new byte [1000];
 		try(
 				Socket socketInput = new Socket(hostName, portNumber);//creates new socket and names it echoSocket
 				DataOutputStream dout = new DataOutputStream(socketInput.getOutputStream());					
 				) {
-			int count =0;
+			int count = 0;
 			long convertedTime = time * 1000;
 			long startTime = System.currentTimeMillis();
-			while(false||(System.currentTimeMillis()-startTime)<convertedTime) {
-			dout.write(b, 0, b.length);
-			count++;
+			while((System.currentTimeMillis()-startTime)<convertedTime) {
+				dout.write(b, 0, b.length);
+				count++;
 			}
-			double rate = count/time;
-			System.out.println("sent="+(count/1000)+" KB rate="+rate+ "Mbps");//TODO print stats
+			double rate = (count/1000)*8/time;
+			System.out.println("sent = "+ count + "KB rate= "+ rate + " Mbps");//TODO print stats
 		}
 		/****EXCEPTION HANDLING***/
 			catch (UnknownHostException e) {
@@ -57,27 +54,27 @@ public class Iperfer {
 			Socket clientSocket = serverSocket.accept();//listens for connections to the socket
 			/**how data is sent through the pipe**/
 				DataInputStream din = new DataInputStream(clientSocket.getInputStream());
-				//TODO recieve data and print stats
+				//TODO receive data and print stats
 				){
 			int count = 0;
 			int value = 0;
 			long startTime;
 			long finishTime;
+			byte[] buffer = new byte[1000];
 			startTime = System.currentTimeMillis();
 			 while(true){
-				 value = din.read();
-				 if(value != -1) {
-					 count++;
+				 value = din.read(buffer,0,1000);
+				 if(value == -1) {
+					 finishTime = System.currentTimeMillis();
+					 break;
 				 }
 				 else {
-				  break;
+					 count = count + value;
 				 }
 			 }
-			 System.out.println("Count"+count);
 			 double finalData = count/1000;
-			 finishTime = System.currentTimeMillis();
-			 double finalRate = count/(finishTime-startTime);//TODO throws divide by zero exception 
-			 System.out.println("recieved="+finalData/1000+" KB rate="+finalRate+" Mbps");
+			 double finalRate = finalData*8/(finishTime-startTime);
+			 System.out.println("received = "+finalData+" KB rate ="+finalRate+" Mbps");
 			
 		}catch (IOException e) {
 				 System.out.println("Exception caught when trying to listen on port "
